@@ -1,0 +1,5 @@
+# Each project repo below is its own independent git repository (own remote,
+# own history) - not tracked as part of this course-notes repo.
+enterprise-cloud-developer-base/
+enterprise-cloud-developer-practice/
+enterprise-cloud-developer-apply/
