@@ -77,15 +77,35 @@ LinkedIn Learning videos (some Learning Activities require this):
 - https://www.linkedin.com/learning
 - Login: username@mybvc.ca + mybvc password
 
-## Assignment due dates
+## Assignment due dates / implementation status
 
-| Assignment | Due date |
-|---|---|
-| Project 1. Develop an API Endpoint | Sep 29, 2026, 11:59 PM |
-| Project 2. Integrate Data Storage | Oct 20, 2026, 11:59 PM |
-| Project 3. Secure the Application Program Interface | Nov 3, 2026, 11:59 PM |
-| Project 4. Implement the File Management Solution | Nov 17, 2026, 11:59 PM |
-| Project 5. Implement Asynchronous Communication and Data Processing | Dec 1, 2026, 11:59 PM |
+| Assignment | Due date | Status |
+|---|---|---|
+| Project 1. Develop an API Endpoint | Sep 29, 2026, 11:59 PM | Implemented + verified (2026-09-08) |
+| Project 2. Integrate Data Storage | Oct 20, 2026, 11:59 PM | Implemented + verified (2026-09-08) |
+| Project 3. Secure the Application Program Interface | Nov 3, 2026, 11:59 PM | Implemented + verified (2026-09-08) |
+| Project 4. Implement the File Management Solution | Nov 17, 2026, 11:59 PM | Implemented + verified (2026-09-08) |
+| Project 5. Implement Asynchronous Communication and Data Processing | Dec 1, 2026, 11:59 PM | Implemented + verified (2026-09-08) |
+
+All 5 projects have working code, passing unit tests, `Command.txt` entries,
+and an `evidence/partN/` folder with live LocalStack output, all committed
+to this repo. **What's still needed from Eddie for each**: record a video
+running the project and submit it to the D2L dropbox with this repo's GitHub
+link in a comment — that submission step can't be done on his behalf.
+
+Two things worth a second look before submitting, both documented in detail
+in `Command.txt`:
+- **Project 4/5 bucket & topic policies are accepted by LocalStack but not
+  enforced** (deleting an S3 object without MFA, and subscribing to the SNS
+  topic with a non-email protocol, both succeeded despite the Deny policies).
+  The policies themselves are correct AWS JSON: this is a LocalStack
+  community-edition limitation, not a defect — but worth mentioning if the
+  video demo tries to show the restriction actually blocking something.
+- **Project 4 only implements the presigned-URL flow** per the literal PDF
+  text; `coupons_import` (a separate lambda with its own script stub and an
+  existing `/coupons/import` endpoint from `t0`) was left untouched since the
+  instructions never mention it. Worth double-checking against the rubric
+  when it's available, in case grading scope is broader than the PDF states.
 
 ## Course structure / term dates
 
