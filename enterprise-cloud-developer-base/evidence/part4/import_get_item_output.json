@@ -1,0 +1,13 @@
+{
+    "Item": {
+        "coupon_code": {
+            "S": "TRAVEL10"
+        },
+        "coupon_id": {
+            "S": "3f656e5fad7aa840efa7ab8c40118f011b9b9b5b"
+        },
+        "title": {
+            "S": "Save 10% on Hyatt hotels"
+        }
+    }
+}

@@ -196,13 +196,38 @@ Commands used to provision the S3 bucket/policy and the presigned-URL Lambda
 
 NOTE: the instruction PDF describes only the coupons S3 bucket, its
 deletion-policy, and the coupons_import_presigned_url Lambda/endpoint (items
-1-8). It does not mention coupons_import at all, even though a
-t4_update_coupons_import_lambda.sh stub exists in scripts/ and a
-/coupons/import endpoint already exists from t0. Per the instructions'
-literal text, only the presigned-URL flow was implemented for this project;
-coupons_import was left untouched. Flagging this in case the actual grading
-scope is broader than the PDF states - this was a judgment call, not
-something worth blocking progress on.
+1-8) - coupons_import isn't mentioned in the PDF text at all. Initially left
+it untouched on that basis. UPDATE (after fetching the actual D2L rubric,
+see course-info.md): the rubric has a separate 3-of-9-point criterion
+"Handle object upload to the bucket" whose required steps are "Create
+Lambda function code..., Package..., Deploy... using the role and code
+package" - this is coupons_import. Implemented below once this was found.
+
+10. Update and redeploy coupons_import (scripts/t4_update_coupons_import_lambda.sh)
+------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_import
+cd ./lambda/coupons_import && zip -r ../../coupons_import.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_import --zip-file fileb://coupons_import.zip
+
+(coupons_import receives the coupon JSON via the request body - matching
+samples/t4_sample_coupon_import_event.json's shape - and does a DynamoDB
+PutItem into the coupons table, rather than reacting to an S3 event
+notification. The rubric's required steps only mention deploying the
+Lambda, not configuring an S3 trigger, so the simpler API-Gateway-invoked
+pattern - consistent with every other Lambda in this course - was used.)
+
+11. Verify /coupons/import (routed by t0's existing API Gateway wiring)
+------------------------------------------------------------------------------
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/import \
+  -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","title":"...", ...}'
+=> {"status":"success"}
+awslocal dynamodb get-item --table-name coupons --key '{"coupon_id":{"S":"..."}}'
+=> returns the exact item that was POSTed
+
+12. Run unit tests
+----------------------
+cd lambda/coupons_import && npx jest
+=> PASS - 3/3 (stores the coupon, 400 missing coupon_id, 400 invalid JSON)
 
 1. Create the coupons S3 bucket (scripts/t4_create_s3_bucket.sh)
 ---------------------------------------------------------------------
@@ -257,7 +282,9 @@ Evidence captured under evidence/part4/:
 - upload_result.txt (PUT response/status)
 - downloaded_coupon.json, get_object_metadata.json (proof the upload landed)
 - bucket_policy_output.json (get-bucket-policy showing the stored policy)
-- unit_test_results.json
+- unit_test_results.json (coupons_import_presigned_url)
+- import_output.json, import_get_item_output.json (coupons_import round-trip)
+- coupons_import_unit_test_results.json
 
 
 ================================================================================

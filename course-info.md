@@ -101,11 +101,101 @@ in `Command.txt`:
   The policies themselves are correct AWS JSON: this is a LocalStack
   community-edition limitation, not a defect — but worth mentioning if the
   video demo tries to show the restriction actually blocking something.
-- **Project 4 only implements the presigned-URL flow** per the literal PDF
-  text; `coupons_import` (a separate lambda with its own script stub and an
-  existing `/coupons/import` endpoint from `t0`) was left untouched since the
-  instructions never mention it. Worth double-checking against the rubric
-  when it's available, in case grading scope is broader than the PDF states.
+- **Project 5's rubric conflicts with its instruction PDF** on the SNS topic
+  policy: the PDF explicitly wants "prevent the usage of protocol different
+  from email" (implemented as-is), but the rubric's "Create a SNS Topic"
+  criterion instead describes "Configure topic policy to allow access from
+  Lambda function" + "Add HTTP subscription to the SNS Topic" — which is
+  hard to reconcile with a deny-non-email policy (an HTTP subscription IS a
+  non-email protocol). Left as the PDF specifies since it's the more
+  specific, assignment-authored source; flagging in case this needs
+  clarifying with the instructor before submitting.
+
+~~Project 4 only implements the presigned-URL flow per the literal PDF
+text~~ — **resolved**: after pulling the actual rubric (below), its "Handle
+object upload to the bucket" criterion (3 of 9 points) maps to
+`coupons_import`, which has now been implemented too (receives the coupon
+JSON via the API Gateway body, same pattern as every other Lambda in this
+course, and does a DynamoDB PutItem into the `coupons` table).
+
+## Rubrics (full criteria, fetched 2026-09-08)
+
+Stored here as text, not just a link, so this survives D2L reorganizing.
+Access path: **Assessments > Dropbox/Assignment > (project name)** — the
+rubric renders inline under "Rubric Name:" via a `<d2l-rubric>` custom
+element with nested shadow DOM, which needs a recursive shadow-root walk to
+read (`get_page_text`/plain `innerText` won't see inside it). The Content
+page's per-project links are unreliable (some 403, per the Project 1 note
+above) and the Dropbox page's rubric widget itself is flaky — it hung/froze
+the browser tab on a couple of interactions during this fetch; reloading in
+a fresh tab without clicking anything extra worked reliably.
+
+### Project 1: Develop Application Program Interfaces While Demonstrating Attention to Detail (12 pts)
+
+| Criterion | Mastery (3) | Competent (2) | Developing (1) | Incomplete (0) |
+|---|---|---|---|---|
+| Provision required permissions for a Lambda function | All of Competent + restricted access to the relevant resources given | Create IAM role with Lambda trust policy; create a policy allowing CloudWatch, DynamoDB, S3 per the requirements; attach policy to role | Not all Competent criteria met | Evidence incomplete |
+| Create an API endpoint with a static response | — | Create Lambda code with a static response using the given structure; package the code+deps; deploy using the role and package | Not all Competent criteria met | Evidence incomplete |
+| Deploy resource to an API | All of Competent + selected the right integration type | Add new resource to API Gateway; add new method; create integration linking method/resource/lambda; deploy the API | Not all Competent criteria met | Evidence incomplete |
+| Test an API endpoint | — | Create a unit test for the lambda; add end-to-end test to the Newman collection | Not all Competent criteria met | Evidence incomplete |
+
+Overall: Mastery 12 min, Competent 8 min, Developing 4 min, Incomplete 0 min.
+
+### Project 2: Integrate Data Storage While Demonstrating Autonomy (9 pts)
+
+| Criterion | Mastery (3) | Competent (2) | Developing (1) | Incomplete (0) |
+|---|---|---|---|---|
+| Create a NoSQL Database to provide data storage | — | Create the DB per the requirements doc's configuration; add the required new index | Not all Competent criteria met | Evidence incomplete |
+| Update the endpoint to retrieve information from the NoSQL Database | All of Competent + tests accounted for the dependency on an external service | Update Lambda to read from the DB instead of a static response; adjust tests; package+deploy the Lambda; deploy the API | Not all Competent criteria met | Evidence incomplete |
+| Create a new endpoint to allow for updates of the existing items | — | Create Lambda code to update DB items; package+deploy; create a new method/integration for the endpoint; deploy the API | Not all Competent criteria met | Evidence incomplete |
+
+Overall: Mastery 9 min, Competent 6 min, Developing 3 min, Incomplete 0 min.
+
+### Project 3: Secure Application Program Interface While Making Timely Decisions to Meet Deadlines (6 pts)
+
+| Criterion | Mastery (3) | Competent (2) | Developing (1) | Incomplete (0) |
+|---|---|---|---|---|
+| Create a login endpoint to authenticate clients in the API | All of Competent + the token was encrypted | New Lambda authenticates clients per requirements, returns a valid JWT; package+deploy; new method/integration for the endpoint; deploy the API | Not all Competent criteria met | Evidence incomplete |
+| Update existing endpoints to require authentication | All of Competent + correct HTTP verb used | Update the tied Lambdas to require a valid JWT before processing; adjust tests; deploy Lambda updates; deploy the API | Not all Competent criteria met | Evidence incomplete |
+
+Overall (inferred from the 3-pt/criterion, 6-pt total pattern used elsewhere): Mastery 6 min, Competent 4 min, Developing 2 min, Incomplete 0 min.
+
+### Project 4: Implement File Management Solution While Demonstrating Decomposition Skills (9 pts)
+
+| Criterion | Mastery (3) | Competent (2) | Developing (1) | Incomplete (0) |
+|---|---|---|---|---|
+| Create and configure a storage bucket | — | Create bucket with a public-ACL **block** (i.e. block public access — matches the PDF's "private ACL"); bucket policy preventing deletion without MFA | Not all Competent criteria met | Evidence incomplete |
+| Handle object upload to the bucket | All of Competent + code is aware of the file type | Create Lambda code [for handling an uploaded object]; package the code+deps; deploy using the role and package | Not all Competent criteria met | Evidence incomplete |
+| Create pre-signed URLs for the front end application to upload files | All of Competent + an expiration time was set on the URL | Create Lambda code generating a presigned URL for bucket upload; package+deploy | Not all Competent criteria met | Evidence incomplete |
+
+Overall: Mastery 9 min, Competent 6 min, Developing 3 min, Incomplete 0 min.
+
+(Note: "Handle object upload to the bucket" is what `coupons_import` covers —
+this was the criterion missing from the initial implementation, added after
+finding this rubric.)
+
+### Project 5: Implement Asynchronous Communication and Data Processing While Demonstrating Adaptability (12 pts)
+
+| Criterion | Mastery (3) | Competent (2) | Developing (1) | Incomplete (0) |
+|---|---|---|---|---|
+| Create a Kinesis Stream to allow for event based communication | All of Competent + correct capacity configured for the stream | Create the Kinesis Stream | Not all Competent criteria met | Evidence incomplete |
+| Consume information from the stream (event based) *(criterion name doesn't match its own steps below — see note)* | — | Create Lambda code that **publishes** events on the Kinesis stream; package+deploy | Not all Competent criteria met | Evidence incomplete |
+| Create a SNS Topic to allow for pub/sub communication | All of Competent + restrictions created for the subscription type | Create SNS Topic; configure topic policy to allow access from Lambda function; add an HTTP subscription to the topic | Not all Competent criteria met | Evidence incomplete |
+| Implement pub/sub fanout using the SNS Topic | — | Create Lambda code that publishes a notification on the SNS Topic; package+deploy | Not all Competent criteria met | Evidence incomplete |
+
+Overall: Mastery 12 min, Competent 8 min, Developing 4 min, Incomplete 0 min.
+
+Note on criterion 2 ("Consume information from the stream"): despite the
+name, its actual graded steps describe deploying a Lambda that **publishes**
+to the stream — i.e. it's `coupons_event_publisher`, already covered by
+criterion 1's stream creation and this repo's implementation. Likely a
+mislabeled/reused rubric row rather than a real "consumer Lambda"
+requirement; flagging rather than guessing at a consumer implementation
+that isn't asked for anywhere else (PDF included).
+
+Note on criterion 3 ("Create a SNS Topic"): conflicts with the PDF as
+described above (allow-Lambda-access + HTTP subscription vs. the PDF's
+deny-non-email policy) — see the flagged item earlier in this file.
 
 ## Course structure / term dates
 
