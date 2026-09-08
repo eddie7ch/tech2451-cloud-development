@@ -258,3 +258,90 @@ Evidence captured under evidence/part4/:
 - downloaded_coupon.json, get_object_metadata.json (proof the upload landed)
 - bucket_policy_output.json (get-bucket-policy showing the stored policy)
 - unit_test_results.json
+
+
+================================================================================
+
+
+Assessment Part 5 - Implement Asynchronous Communication and Data Processing
+Commands used to provision the Kinesis stream/SNS topic and update both Lambdas
+
+(The IAM permissions for Kinesis (stream/coupons) and SNS (topic coupons)
+were already granted to coupons_production_role by t0's
+coupons_production_policy.json, so no new IAM work was needed here.)
+
+1. Create the coupons Kinesis stream (scripts/t5_create_coupons_stream.sh)
+---------------------------------------------------------------------------
+awslocal kinesis create-stream --stream-name coupons --shard-count 5
+
+2. Create the coupons SNS topic (scripts/t5_create_coupons_topic.sh)
+-------------------------------------------------------------------------
+awslocal sns create-topic --name coupons
+
+3. Add the deny-non-email-protocol topic policy (scripts/t5_add_policy_to_coupons_topic.sh)
+------------------------------------------------------------------------------------------------
+awslocal sns set-topic-attributes --topic-arn arn:aws:sns:us-east-1:000000000000:coupons \
+  --attribute-name Policy --attribute-value file://scripts/coupons_topic_policy.json
+
+(Policy: Deny SNS:Subscribe when "StringNotEquals": {"sns:Protocol": "email"}
+- i.e. only email-protocol subscriptions are allowed.
+KNOWN LIMITATION (same as Part 4's bucket policy): verified LocalStack
+accepts and stores this policy (see topic_attributes_output.json) but does
+NOT enforce it - `aws sns subscribe --protocol sms` succeeded despite the
+Deny policy. This is a LocalStack enforcement gap, not a defect in the
+policy; it is syntactically/semantically correct for real AWS.)
+
+4. Update and redeploy coupons_event_publisher (scripts/t5_update_coupons_event_publisher_lambda.sh)
+-----------------------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_event_publisher
+cd ./lambda/coupons_event_publisher && zip -r ../../coupons_event_publisher.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_event_publisher --zip-file fileb://coupons_event_publisher.zip
+
+5. Update and redeploy coupons_notification_sender (scripts/t5_update_coupons_notification_sender_lambda.sh)
+---------------------------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_notification_sender
+cd ./lambda/coupons_notification_sender && zip -r ../../coupons_notification_sender.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_notification_sender --zip-file fileb://coupons_notification_sender.zip
+
+6. Verify event publishing (routed by t0's existing API Gateway wiring)
+-----------------------------------------------------------------------------
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/event_publisher \
+  -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","title":"..."}'
+=> {"status":"success"}
+
+# read back the record to confirm it actually landed on the stream
+# (partition-key hashing means it can be on any of the 5 shards)
+for shard in $(awslocal kinesis describe-stream --stream-name coupons --query 'StreamDescription.Shards[].ShardId' --output text); do
+  it=$(awslocal kinesis get-shard-iterator --stream-name coupons --shard-id $shard --shard-iterator-type TRIM_HORIZON --query ShardIterator --output text)
+  awslocal kinesis get-records --shard-iterator $it --query 'Records[].Data' --output text
+done
+=> found the exact JSON payload (base64-decoded) on shardId-000000000004
+
+7. Verify notification sending
+------------------------------------
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/notification_sender \
+  -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","message":"anything - ignored"}'
+=> {"status":"success"} (SNS publish uses the fixed message "A new coupon is available"
+   regardless of what's in the request body's "message" field, per the instructions'
+   literal wording)
+
+8. Run unit tests
+--------------------
+cd lambda/coupons_event_publisher && npx jest
+=> PASS - 3/3 (publishes to stream, 400 missing coupon_id, 400 invalid JSON)
+cd lambda/coupons_notification_sender && npx jest
+=> PASS - 3/3 (publishes fixed message, 400 missing coupon_id, 400 invalid JSON)
+
+Evidence captured under evidence/part5/:
+- event_publisher_output.json, notification_sender_output.json
+- describe_stream_output.json (5-shard stream config)
+- topic_attributes_output.json (topic + stored policy)
+- coupons_event_publisher_unit_test_results.json, coupons_notification_sender_unit_test_results.json
+
+
+================================================================================
+
+All 5 projects (Part 1-5) implemented, deployed, and verified end-to-end
+against a live LocalStack instance. See evidence/part1 through evidence/part5
+for captured outputs, and this file's per-part sections above for the exact
+commands and reasoning behind each implementation decision.

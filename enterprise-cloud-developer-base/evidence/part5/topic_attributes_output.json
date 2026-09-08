@@ -1,0 +1,12 @@
+{
+    "Attributes": {
+        "DisplayName": "",
+        "Owner": "000000000000",
+        "Policy": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"DenyNonEmailProtocol\",\n      \"Effect\": \"Deny\",\n      \"Principal\": \"*\",\n      \"Action\": \"SNS:Subscribe\",\n      \"Resource\": \"arn:aws:sns:us-east-1:000000000000:coupons\",\n      \"Condition\": {\n        \"StringNotEquals\": {\n          \"sns:Protocol\": \"email\"\n        }\n      }\n    }\n  ]\n}\n",
+        "SubscriptionsConfirmed": "0",
+        "SubscriptionsDeleted": "0",
+        "SubscriptionsPending": "0",
+        "TopicArn": "arn:aws:sns:us-east-1:000000000000:coupons",
+        "EffectiveDeliveryPolicy": "{\"http\": {\"defaultHealthyRetryPolicy\": {\"minDelayTarget\": 20, \"maxDelayTarget\": 20, \"numRetries\": 3, \"numMaxDelayRetries\": 0, \"numNoDelayRetries\": 0, \"numMinDelayRetries\": 0, \"backoffFunction\": \"linear\"}, \"disableSubscriptionOverrides\": false, \"defaultRequestPolicy\": {\"headerContentType\": \"text/plain; charset=UTF-8\"}}}"
+    }
+}

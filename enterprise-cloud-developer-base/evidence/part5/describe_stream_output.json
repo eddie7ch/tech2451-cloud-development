@@ -1,0 +1,68 @@
+{
+    "StreamDescription": {
+        "Shards": [
+            {
+                "ShardId": "shardId-000000000000",
+                "HashKeyRange": {
+                    "StartingHashKey": "0",
+                    "EndingHashKey": "68056473384187692692674921486353642290"
+                },
+                "SequenceNumberRange": {
+                    "StartingSequenceNumber": "49678132788821564296365980911258033654788136737244708866"
+                }
+            },
+            {
+                "ShardId": "shardId-000000000001",
+                "HashKeyRange": {
+                    "StartingHashKey": "68056473384187692692674921486353642291",
+                    "EndingHashKey": "136112946768375385385349842972707284581"
+                },
+                "SequenceNumberRange": {
+                    "StartingSequenceNumber": "49678132788843865041564511534399569373060785098750689298"
+                }
+            },
+            {
+                "ShardId": "shardId-000000000002",
+                "HashKeyRange": {
+                    "StartingHashKey": "136112946768375385385349842972707284582",
+                    "EndingHashKey": "204169420152563078078024764459060926872"
+                },
+                "SequenceNumberRange": {
+                    "StartingSequenceNumber": "49678132788866165786763042157541105091333433460256669730"
+                }
+            },
+            {
+                "ShardId": "shardId-000000000003",
+                "HashKeyRange": {
+                    "StartingHashKey": "204169420152563078078024764459060926873",
+                    "EndingHashKey": "272225893536750770770699685945414569163"
+                },
+                "SequenceNumberRange": {
+                    "StartingSequenceNumber": "49678132788888466531961572780682640809606081821762650162"
+                }
+            },
+            {
+                "ShardId": "shardId-000000000004",
+                "HashKeyRange": {
+                    "StartingHashKey": "272225893536750770770699685945414569164",
+                    "EndingHashKey": "340282366920938463463374607431768211455"
+                },
+                "SequenceNumberRange": {
+                    "StartingSequenceNumber": "49678132788910767277160103403824176527878730183268630594"
+                }
+            }
+        ],
+        "StreamARN": "arn:aws:kinesis:us-east-1:000000000000:stream/coupons",
+        "StreamName": "coupons",
+        "StreamStatus": "ACTIVE",
+        "RetentionPeriodHours": 24,
+        "EnhancedMonitoring": [
+            {
+                "ShardLevelMetrics": []
+            }
+        ],
+        "EncryptionType": "NONE",
+        "KeyId": null,
+        "StreamCreationTimestamp": 1788828903.401
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyNonEmailProtocol",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "SNS:Subscribe",
+      "Resource": "arn:aws:sns:us-east-1:000000000000:coupons",
+      "Condition": {
+        "StringNotEquals": {
+          "sns:Protocol": "email"
+        }
+      }
+    }
+  ]
+}
