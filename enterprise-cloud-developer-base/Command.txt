@@ -124,3 +124,65 @@ Evidence captured under evidence/part2/:
 - get_by_id_output.json, update_output.json (live API responses)
 - describe_table_output.json (table + GSI config)
 - coupons_get_by_id_unit_test_results.json, coupons_update_unit_test_results.json
+
+
+================================================================================
+
+
+Assessment Part 3 - Secure the Application Program Interface
+Commands used to implement token issuing/validation
+
+Design notes:
+- bcryptjs (pure-JS bcrypt implementation, same $2a$ hash format, no native
+  build step) is used instead of the native `bcrypt` package to avoid a
+  Windows node-gyp/Visual Studio build dependency. It reads/writes the same
+  hash format as the seeded users table from t0 (bcrypt, 12 rounds).
+- Token is a real HS256 JWT (via `jsonwebtoken`), signed with the secret
+  0HXc4w5NEzA61HkV, 3600s (1hr) expiry - matches the sample response's
+  {token, expiresIn} shape and the 3-part JWT structure.
+- coupons_to_secure expects the token in an `Authorization: Bearer <token>`
+  header (standard REST convention; not specified explicitly in the
+  instructions, so this is the assumption made).
+
+1. Update and redeploy coupons_get_token (scripts/t3_update_coupons_get_token_lambda.sh)
+--------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_get_token
+cd ./lambda/coupons_get_token && zip -r ../../coupons_get_token.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_get_token --zip-file fileb://coupons_get_token.zip
+
+2. Update and redeploy coupons_to_secure (scripts/t3_update_coupons_to_secure_lambda.sh)
+--------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_to_secure
+cd ./lambda/coupons_to_secure && zip -r ../../coupons_to_secure.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_to_secure --zip-file fileb://coupons_to_secure.zip
+
+3. Verify POST /token (routed by t0's existing API Gateway wiring)
+-----------------------------------------------------------------------
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/token \
+  -H "Content-Type: application/json" --data-raw '{"username":"tester1","password":"Pc4RM0AMKy5aSGfD"}'
+=> {"token":"<JWT>","expiresIn":3600}
+
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/token \
+  -H "Content-Type: application/json" --data-raw '{"username":"tester1","password":"wrong"}'
+=> 403 {"message":"Invalid username or password"}
+
+4. Verify GET /coupons/to_secure
+-------------------------------------
+curl http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/to_secure \
+  -H "Authorization: Bearer <token from step 3>"
+=> 200 {"status":"success"}
+
+curl http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/to_secure
+=> 403 {"message":"Invalid or missing token"} (no/invalid token)
+
+5. Run unit tests
+--------------------
+cd lambda/coupons_get_token && npx jest
+=> PASS - 4/4 (valid login, wrong password, unknown user, missing fields)
+cd lambda/coupons_to_secure && npx jest
+=> PASS - 4/4 (valid token, invalid token, expired token, missing header)
+
+Evidence captured under evidence/part3/:
+- token_valid_output.json, token_invalid_output.txt
+- to_secure_valid_output.txt, to_secure_forbidden_output.txt
+- coupons_get_token_unit_test_results.json, coupons_to_secure_unit_test_results.json
