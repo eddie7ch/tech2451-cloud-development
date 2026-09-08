@@ -1,0 +1,11 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "Tue, 08 Sep 2026 00:52:07 GMT",
+    "ContentLength": 94,
+    "ETag": "\"05c1e1f195a3a53ef595196a818949eb\"",
+    "ChecksumCRC64NVME": "R4OifYNY/4g=",
+    "ChecksumType": "FULL_OBJECT",
+    "ContentType": "application/json",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+}

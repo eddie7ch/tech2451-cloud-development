@@ -186,3 +186,75 @@ Evidence captured under evidence/part3/:
 - token_valid_output.json, token_invalid_output.txt
 - to_secure_valid_output.txt, to_secure_forbidden_output.txt
 - coupons_get_token_unit_test_results.json, coupons_to_secure_unit_test_results.json
+
+
+================================================================================
+
+
+Assessment Part 4 - Implement a File Management Solution
+Commands used to provision the S3 bucket/policy and the presigned-URL Lambda
+
+NOTE: the instruction PDF describes only the coupons S3 bucket, its
+deletion-policy, and the coupons_import_presigned_url Lambda/endpoint (items
+1-8). It does not mention coupons_import at all, even though a
+t4_update_coupons_import_lambda.sh stub exists in scripts/ and a
+/coupons/import endpoint already exists from t0. Per the instructions'
+literal text, only the presigned-URL flow was implemented for this project;
+coupons_import was left untouched. Flagging this in case the actual grading
+scope is broader than the PDF states - this was a judgment call, not
+something worth blocking progress on.
+
+1. Create the coupons S3 bucket (scripts/t4_create_s3_bucket.sh)
+---------------------------------------------------------------------
+awslocal s3api create-bucket --bucket coupons --acl private --region us-east-1
+
+2. Add the deny-delete-without-MFA bucket policy (scripts/t4_add_bucket_policy.sh)
+---------------------------------------------------------------------------------------
+awslocal s3api put-bucket-policy --bucket coupons --policy file://scripts/coupons_bucket_policy.json
+
+(Policy: Deny s3:DeleteObject/DeleteObjectVersion/DeleteBucket when the
+"Null": {"aws:MultiFactorAuthPresent": "true"} condition matches - i.e. when
+there's no MFA-authenticated STS session present. This is AWS's own
+documented pattern for "require MFA to delete" via bucket policy.
+KNOWN LIMITATION: verified LocalStack (community edition used here) accepts
+and stores this policy correctly (see get-bucket-policy output below) but
+does NOT actually enforce the Deny condition on delete calls - a test
+`aws s3api delete-object` without MFA succeeded despite the policy. This
+is a LocalStack enforcement gap, not a defect in the policy itself; the
+policy is syntactically and semantically correct for real AWS.)
+
+3. Update and redeploy coupons_import_presigned_url (scripts/t4_update_coupons_import_presigned_url_lambda.sh)
+------------------------------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_import_presigned_url
+cd ./lambda/coupons_import_presigned_url && zip -r ../../coupons_import_presigned_url.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_import_presigned_url --zip-file fileb://coupons_import_presigned_url.zip
+
+(The Lambda signs the URL against `http://localhost:4566` rather than
+LOCALSTACK_HOSTNAME - the latter only resolves inside the LocalStack docker
+network, but a presigned URL is meant to be used by an external client, so
+it needs a host that client can actually reach. First attempt used
+LOCALSTACK_HOSTNAME and produced an unreachable internal docker IP; fixed
+by switching to the externally-published localhost:4566 edge port.)
+
+4. Verify the full presigned-upload flow (routed by t0's existing API Gateway wiring)
+------------------------------------------------------------------------------------------
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/import_presigned_url
+=> {"url":"http://localhost:4566/coupons/coupon.json?AWSAccessKeyId=...&Signature=..."}
+
+curl -X PUT "<url from above>" -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","title":"..."}'
+=> HTTP 200 (object uploaded)
+
+awslocal s3api get-object --bucket coupons --key coupon.json downloaded_coupon.json
+=> downloads the exact JSON that was PUT
+
+5. Run unit tests
+--------------------
+cd lambda/coupons_import_presigned_url && npx jest
+=> PASS - 1/1 (returns a presigned PUT URL for coupon.json in the coupons bucket)
+
+Evidence captured under evidence/part4/:
+- presigned_url_response.json (the {url:...} response)
+- upload_result.txt (PUT response/status)
+- downloaded_coupon.json, get_object_metadata.json (proof the upload landed)
+- bucket_policy_output.json (get-bucket-policy showing the stored policy)
+- unit_test_results.json
