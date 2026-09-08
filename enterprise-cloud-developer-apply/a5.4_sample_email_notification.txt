@@ -1,0 +1,7 @@
+Dear customer,
+
+This is a notification about <stock_id> from trading company to inform you that:
+<message>
+
+Sincerely,
+trading company

@@ -1,0 +1,13 @@
+{
+  "body": {
+    "MessageId": "000d58e1-f0e5-47bd-9af6-d2be9c7c2650",
+    "ResponseMetadata": {
+      "RequestId": "1HUCX2P3C9NEMEO3ZM470KZGQVL3GAAG9J3LI36BTK8BZVU4CBEA"
+    }
+  },
+  "headers": {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application-json"
+  },
+  "statusCode": 200
+}

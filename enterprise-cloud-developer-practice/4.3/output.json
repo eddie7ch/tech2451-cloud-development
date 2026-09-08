@@ -1,0 +1,15 @@
+{
+    "body": {
+      "pre_signed_url": "http://172.17.0.2:4566/lambda-uploads/practice.txt?AWSAccessKeyId=test&Expires=1667688778&Signature=eo4sw6h9Qza4c6Mxww%2FDl1wgO9k%3D&X-Amzn-Trace-Id=Root%3D1-dc99d00f-c079a84d433534434534ef0d%3BParent%3D91ed514f1e5c03b2%3BSampled%3D1"
+    },
+    "headers": {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application-json"
+    },
+    "statusCode": 200
+  }
+  {
+    "StatusCode": 200,
+    "LogResult": "",
+    "ExecutedVersion": "$LATEST"
+  }

@@ -1,0 +1,12 @@
+{
+    "body": {
+        "EncryptionType": "NONE",
+        "SequenceNumber": "49634909835625306138656248368722924831932659263055331362",
+        "ShardId": "shardId-000000000002"
+    },
+    "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application-json"
+    },
+    "statusCode": 200
+}

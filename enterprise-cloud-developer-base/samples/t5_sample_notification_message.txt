@@ -1,0 +1,9 @@
+Dear customer,
+
+We are glad to inform you that a new coupon is available in our system:
+Coupon code: <coupon-code>
+Title: <title>
+Description: <description>
+
+Enjoy,
+Ideal Trip Team

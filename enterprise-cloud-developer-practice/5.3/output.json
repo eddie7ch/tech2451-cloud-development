@@ -1,0 +1,11 @@
+{
+    "Subscriptions": [
+        {
+            "SubscriptionArn": "arn:aws:sns:us-east-1:000000000000:aws-notification:09ec8fa3-ea29-49f8-ba49-fe07b0ffb698",
+            "Owner": "000000000000",
+            "Protocol": "email",
+            "Endpoint": "john.smith@example.ca",
+            "TopicArn": "arn:aws:sns:us-east-1:000000000000:aws-notifications"
+        }
+    ]
+}

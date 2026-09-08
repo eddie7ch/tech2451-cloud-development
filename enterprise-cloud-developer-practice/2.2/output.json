@@ -1,0 +1,10 @@
+{
+  "body": {
+    "message": "{\"Item\":{\"artist\":\"Elvis Presley\",\"songTitle\":\"Stuck on You\"}}"
+  },
+  "headers": {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application-json"
+  },
+  "statusCode": 200
+}

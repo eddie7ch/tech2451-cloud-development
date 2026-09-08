@@ -1,0 +1,12 @@
+.DS_Store
+.idea/
+*.iml
+node_modules/
+**/node_modules/
+npm-debug.log
+**/npm-debug.log
+**/test/**/*.log
+*.zip
+
+# Course-provided instructions/rubrics downloaded from D2L - never publish these
+instructions/

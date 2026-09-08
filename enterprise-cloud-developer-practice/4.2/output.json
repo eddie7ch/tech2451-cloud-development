@@ -1,0 +1,15 @@
+{
+    "Contents": [
+        {
+            "Key": "event.json",
+            "LastModified": "1900-01-01T22:34:39.000Z",
+            "ETag": "\"99914b932bd37a50b983c5e7c90ae93b\"",
+            "Size": 2,
+            "StorageClass": "STANDARD",
+            "Owner": {
+                "DisplayName": "webfile",
+                "ID": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a"
+            }
+        }
+    ]
+}

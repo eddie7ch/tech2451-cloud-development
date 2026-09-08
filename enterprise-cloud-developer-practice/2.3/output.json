@@ -1,0 +1,16 @@
+{
+    "Item": {
+        "name": {
+            "S": "Peg Legge"
+        },
+        "contact_id": {
+            "N": "5"
+        },
+        "phone": {
+            "S": "9873216540"
+        },
+        "email": {
+            "S": "peg.legge@example.ca"
+        }
+    }
+}

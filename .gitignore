@@ -1,5 +1,12 @@
-# Each project repo below is its own independent git repository (own remote,
-# own history) - not tracked as part of this course-notes repo.
-enterprise-cloud-developer-base/
-enterprise-cloud-developer-practice/
-enterprise-cloud-developer-apply/
+# Build/dependency artifacts - the project folders are plain content in this
+# repo (not separate git repos), so exclude the usual junk instead.
+**/node_modules/
+npm-debug.log
+**/npm-debug.log
+*.zip
+.DS_Store
+.idea/
+*.iml
+
+# Course-provided instructions/rubrics downloaded from D2L - never publish these
+instructions/

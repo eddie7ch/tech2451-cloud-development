@@ -1,0 +1,12 @@
+> test
+> jest
+
+ PASS  ./greetings.test.js
+  ✓ Validate status code (2 ms)
+  ✓ Validate message output
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        0.557 s, estimated 1 s
+Ran all test suites.

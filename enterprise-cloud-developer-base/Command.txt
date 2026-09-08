@@ -1,0 +1,54 @@
+Assessment Part 1 - Develop an API Endpoint
+Commands used to provision and verify the coupons_list endpoint
+
+1. Start LocalStack
+-------------------
+localstack start -d
+
+2. Provision coupons_lambda_role (scripts/t1_provision_coupons_lambda_role.sh)
+-------------------------------------------------------------------------------
+awslocal iam get-role --role-name coupons_lambda_role
+awslocal iam create-policy --policy-name coupons_lambda_role_policy --policy-document file://scripts/coupons_lambda_role_policy.json
+awslocal iam create-role --role-name coupons_lambda_role --assume-role-policy-document file://scripts/coupons_lambda_role_assume_role_policy.json
+awslocal iam attach-role-policy --role-name coupons_lambda_role --policy-arn arn:aws:iam::000000000000:policy/coupons_lambda_role_policy
+
+3. Package and deploy the coupons_list Lambda (scripts/t1_provision_coupons_list_lambda.sh)
+---------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_list
+cd ./lambda/coupons_list
+zip -r ../../coupons_list.zip .
+cd ../..
+awslocal iam get-role --role-name coupons_lambda_role --query Role.Arn --output text
+awslocal lambda create-function --function-name coupons_list --runtime nodejs14.x --zip-file fileb://coupons_list.zip --handler index.handler --role <coupons_lambda_role ARN>
+
+4. Provision the API endpoint (scripts/t1_provision_coupons_endpoint.sh)
+---------------------------------------------------------------------------
+awslocal apigateway get-rest-apis --query "items[?name=='coupons'].id" --output text
+awslocal apigateway get-resources --rest-api-id <api id> --query "items[?path=='/'].id" --output text
+awslocal apigateway create-resource --rest-api-id <api id> --parent-id <root resource id> --path-part coupons_poc
+awslocal apigateway get-resources --rest-api-id <api id> --query "items[?path=='/coupons_poc'].id" --output text
+awslocal apigateway put-method --rest-api-id <api id> --resource-id <coupons_poc resource id> --http-method GET --authorization-type NONE
+awslocal lambda list-functions --query "Functions[?FunctionName=='coupons_list'].FunctionArn" --output text
+awslocal apigateway put-integration --rest-api-id <api id> --resource-id <coupons_poc resource id> --http-method GET --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/<coupons_list lambda ARN>/invocations --passthrough-behavior WHEN_NO_MATCH
+awslocal apigateway create-deployment --rest-api-id <api id> --stage-name local
+
+5. Verify the endpoint
+-----------------------
+curl http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons_poc
+=> {"message":"Coupons API is working successfully"}
+
+6. Run the unit test
+----------------------
+cd lambda/coupons_list
+npx jest
+=> PASS tests/index.spec.js - Coupon list > Should return success message
+
+7. Run the Newman end-to-end test
+------------------------------------
+newman run newman_tests/coupons_newman.json --env-var "api_url=http://<api id>.execute-api.localhost.localstack.cloud:4566/local"
+=> 2/2 assertions passed (Status code is 200, Response has success message)
+
+Evidence of each step is captured under evidence/part1/:
+- output.json            (live API response)
+- unit_test_results.json (jest --json output)
+- newman_report.json     (newman --reporter-json-export output)

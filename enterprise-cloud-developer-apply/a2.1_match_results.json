@@ -1,0 +1,34 @@
+[
+  {
+    "match_id": "202cb962ac59075b964b07152d234b70",
+    "winner_id": "ninja22",
+    "player_ids": [ "zombie_king", "lostAvenger", "ninja22", "ready1"],
+    "meta_data": { "mmr_average": 2000 },
+    "start_time": "1669172096",
+    "end_time": "1669174942"
+  },
+  {
+    "match_id": "dd61273410d7e98516b4928f5e9e9f96",
+    "winner_id": "zombie_king",
+    "player_ids": [ "martiinnn", "nagato1998", "zombie_king", "player666"],
+    "meta_data": { "mmr_average": 1950 },
+    "start_time": "1669172747",
+    "end_time": "1669174714"
+  },
+  {
+    "match_id": "92966355f8d3de204d22707d39a3e661",
+    "winner_id": "ninja22",
+    "player_ids": [ "kelly676", "nagato1998", "ninja22", "zombie_king"],
+    "meta_data": { "mmr_average": 2150 },
+    "start_time": "1669172096",
+    "end_time": "1669174942"
+  },
+  {
+    "match_id": "5351250e934887c340f6b82a423d31ac",
+    "winner_id": "lostAvenger",
+    "player_ids": [ "manager99", "friendly", "ready1", "t3d"],
+    "meta_data": { "mmr_average": 2010 },
+    "start_time": "1669172874",
+    "end_time": "1669174956"
+  }
+]
