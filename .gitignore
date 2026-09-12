@@ -10,3 +10,6 @@ npm-debug.log
 
 # Course-provided instructions/rubrics downloaded from D2L - never publish these
 instructions/
+
+# Personal video-recording scripts/notes - local only, never push these
+video-scripts/
