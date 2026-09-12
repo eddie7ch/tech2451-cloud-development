@@ -5,9 +5,6 @@ const jwt = require('jsonwebtoken');
 
 AWSMock.setSDKInstance(AWS);
 
-// The mock must exist before the module under test instantiates its
-// DynamoDB.DocumentClient, since aws-sdk-mock patches at the class level.
-// It's restored right after so each test below registers its own mock fresh.
 AWSMock.mock('DynamoDB.DocumentClient', 'get', (params, callback) => {
   callback(null, {});
 });

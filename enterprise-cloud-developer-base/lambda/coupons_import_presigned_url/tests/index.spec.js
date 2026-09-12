@@ -3,9 +3,6 @@ const AWSMock = require('aws-sdk-mock');
 
 AWSMock.setSDKInstance(AWS);
 
-// The mock must exist before the module under test instantiates its S3
-// client, since aws-sdk-mock patches at the class level. It's restored
-// right after so each test below registers its own mock fresh.
 AWSMock.mock('S3', 'getSignedUrl', (operation, params, callback) => callback(null, 'https://example.com/signed'));
 
 const {handler} = require('../index.js');

@@ -4,9 +4,7 @@ const BUCKET_NAME = 'coupons';
 const OBJECT_KEY = 'coupon.json';
 const EXPIRES_IN_SECONDS = 300;
 
-// Presigned URLs are meant to be used by an external client (outside the
-// LocalStack docker network), so sign against a host that client can
-// actually reach - not LOCALSTACK_HOSTNAME, which only resolves inside it.
+// use a host the client can actually reach, not LOCALSTACK_HOSTNAME
 const s3Options = process.env.LOCALSTACK_HOSTNAME ?
   {
     endpoint: process.env.S3_PUBLIC_ENDPOINT || 'http://localhost:4566',
