@@ -1,0 +1,11 @@
+{
+    "Subscriptions": [
+        {
+            "SubscriptionArn": "arn:aws:sns:us-east-1:000000000000:coupons:eb606446-1f31-44af-bebd-05bab23862d3",
+            "Owner": "000000000000",
+            "Protocol": "http",
+            "Endpoint": "http://localhost:4566/_sns_demo_subscriber",
+            "TopicArn": "arn:aws:sns:us-east-1:000000000000:coupons"
+        }
+    ]
+}

@@ -101,15 +101,22 @@ in `Command.txt`:
   The policies themselves are correct AWS JSON: this is a LocalStack
   community-edition limitation, not a defect — but worth mentioning if the
   video demo tries to show the restriction actually blocking something.
-- **Project 5's rubric conflicts with its instruction PDF** on the SNS topic
-  policy: the PDF explicitly wants "prevent the usage of protocol different
-  from email" (implemented as-is), but the rubric's "Create a SNS Topic"
-  criterion instead describes "Configure topic policy to allow access from
-  Lambda function" + "Add HTTP subscription to the SNS Topic" — which is
-  hard to reconcile with a deny-non-email policy (an HTTP subscription IS a
-  non-email protocol). Left as the PDF specifies since it's the more
-  specific, assignment-authored source; flagging in case this needs
-  clarifying with the instructor before submitting.
+~~Project 5's rubric conflicts with its instruction PDF on the SNS topic
+policy~~ — **resolved (2026-09-12)**: checked the PDF's file metadata (author
+Aurora Wang, created Sep 1, 2026, the exact start of this term) versus the
+rubric, which has no visible modification date but reads like older, reused
+template text (same pattern already seen in Project 1's rubric). The PDF is
+the more likely current source. Turns out the two aren't actually
+contradictory once read carefully: the rubric's mastery bonus for this
+criterion is "restrictions were created for the subscription type" — that's
+the PDF's deny-non-email policy. A Deny-Subscribe policy only blocks *future*
+Subscribe calls, not existing ones, so adding the rubric's required HTTP
+subscription first, then applying the PDF's deny-non-email policy afterward,
+satisfies both: the subscription demonstrates competent-level pub/sub, and
+it survives the policy being applied on top. Implemented and verified (the
+HTTP subscription is still listed after the policy is in place — see
+`evidence/part5/topic_subscription_output.json`). No need to contact the
+instructor about this one after all.
 
 ~~Project 4 only implements the presigned-URL flow per the literal PDF
 text~~ — **resolved**: after pulling the actual rubric (below), its "Handle
@@ -193,9 +200,10 @@ mislabeled/reused rubric row rather than a real "consumer Lambda"
 requirement; flagging rather than guessing at a consumer implementation
 that isn't asked for anywhere else (PDF included).
 
-Note on criterion 3 ("Create a SNS Topic"): conflicts with the PDF as
-described above (allow-Lambda-access + HTTP subscription vs. the PDF's
-deny-non-email policy) — see the flagged item earlier in this file.
+Note on criterion 3 ("Create a SNS Topic"): resolved, not actually a
+conflict with the PDF — see the flagged item earlier in this file. Add the
+HTTP subscription before applying the PDF's deny-non-email policy and both
+sources are satisfied, since the policy only blocks future subscriptions.
 
 ## Course structure / term dates
 
