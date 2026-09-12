@@ -1,14 +1,15 @@
 const AWS = require('aws-sdk');
 
-AWS.config.update({region: process.env.AWS_REGION || 'us-east-1'});
+const BUCKET_NAME = 'coupons';
 
-const dynamoDbOptions = process.env.LOCALSTACK_HOSTNAME ?
-  {endpoint: `http://${process.env.LOCALSTACK_HOSTNAME}:4566`} :
+const s3Options = process.env.LOCALSTACK_HOSTNAME ?
+  {
+    endpoint: `http://${process.env.LOCALSTACK_HOSTNAME}:4566`,
+    s3ForcePathStyle: true,
+  } :
   {};
 
-const TABLE_NAME = 'coupons';
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient(dynamoDbOptions);
+const s3 = new AWS.S3(s3Options);
 
 exports.handler = async function(event, context) {
   let coupon;
@@ -28,9 +29,11 @@ exports.handler = async function(event, context) {
     };
   }
 
-  await dynamoDb.put({
-    TableName: TABLE_NAME,
-    Item: coupon,
+  await s3.putObject({
+    Bucket: BUCKET_NAME,
+    Key: `${coupon.coupon_id}.json`,
+    Body: JSON.stringify(coupon),
+    ContentType: 'application/json',
   }).promise();
 
   return {

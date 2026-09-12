@@ -3,27 +3,28 @@ const AWSMock = require('aws-sdk-mock');
 
 AWSMock.setSDKInstance(AWS);
 
-AWSMock.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
+AWSMock.mock('S3', 'putObject', (params, callback) => {
   callback(null, {});
 });
 
 const {handler} = require('../index.js');
 
-AWSMock.restore('DynamoDB.DocumentClient', 'put');
+AWSMock.restore('S3', 'putObject');
 
 describe('Coupon import', () => {
 
   afterEach(() => {
-    AWSMock.restore('DynamoDB.DocumentClient', 'put');
+    AWSMock.restore('S3', 'putObject');
   });
 
-  test('Should store the uploaded coupon in DynamoDB', async (done) => {
+  test('Should store the uploaded coupon as a JSON file in the bucket', async (done) => {
 
     const coupon = {coupon_id: '319326de971100158f6fa0daeec978fba1f17e4b', title: 'Save 20% on Fairmont hotels'};
 
-    AWSMock.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-      expect(params.TableName).toBe('coupons');
-      expect(params.Item).toStrictEqual(coupon);
+    AWSMock.mock('S3', 'putObject', (params, callback) => {
+      expect(params.Bucket).toBe('coupons');
+      expect(params.Key).toBe(`${coupon.coupon_id}.json`);
+      expect(JSON.parse(params.Body)).toStrictEqual(coupon);
       callback(null, {});
     });
 

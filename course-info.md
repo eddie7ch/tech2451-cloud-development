@@ -111,6 +111,18 @@ to this repo. **What's still needed from Eddie for each**: record a video
 running the project and submit it to the D2L dropbox with this repo's GitHub
 link in a comment — that submission step can't be done on his behalf.
 
+**Project 4's `coupons_import`/`coupons_import_presigned_url` were corrected
+(2026-09-12)** — see the "Verifying against D2L Content pages" section below
+for how this was found. Originally: `coupons_import` wrote to DynamoDB, and
+`coupons_import_presigned_url` used a hardcoded `coupon.json` filename
+(literally matching the Aurora PDF's example wording). Both were wrong:
+`coupons_import` now writes the coupon as `<coupon_id>.json` in S3, and
+`coupons_import_presigned_url` now signs whatever filename is passed in the
+request body, matching the bundled sample event files
+(`t4_sample_coupon_import_event.json`,
+`t4_sample_coupon_import_presigned_url_event.json`) and a since-found
+detailed (if stale-dated) spec. Verified end-to-end after the fix.
+
 Two things worth a second look before submitting, both documented in detail
 in `Command.txt`:
 - **Project 4/5 bucket & topic policies are accepted by LocalStack but not
@@ -197,7 +209,42 @@ Overall: Mastery 9 min, Competent 6 min, Developing 3 min, Incomplete 0 min.
 
 (Note: "Handle object upload to the bucket" is what `coupons_import` covers —
 this was the criterion missing from the initial implementation, added after
-finding this rubric.)
+finding this rubric. Its actual behavior — write to S3 as `<coupon_id>.json`,
+not DynamoDB — was determined later; see "Verifying against D2L Content
+pages" below.)
+
+## Verifying against D2L Content pages (a third source, alongside the PDF and rubric)
+
+Beyond each project's Dropbox-folder PDF and rubric, the course's **Content**
+area also has a page per module (e.g. Content > Module N), with its own
+"Workplace Scenario" framing, its own attached PDF, and a video whose
+transcript is sometimes pasted in separately. These Content-page PDFs
+(`Part N instructions.pdf` / `part N assessment.pdf`, note the different
+naming from the Dropbox's `Part N instruction.pdf`) all turned out to be
+**authored by "Ellaine Tiamzon," dated March 17, 2023** — a stale template
+from a different, earlier offering, confirmed via each PDF's own file
+metadata (`/Author`, `/CreationDate`), not by content inspection alone.
+
+This stale source is **not automatically wrong** — check it against the real
+(Aurora-authored) PDF and the actual sample files in the repo every time:
+- **Project 1**: contradicted the real PDF (wanted DynamoDB + a dynamic
+  response; real spec is static-only). Ignored.
+- **Projects 2 and 3**: matched the real PDF and rubric almost exactly
+  (same throughput numbers, same JWT secret, same bcrypt rounds). No
+  changes needed — just extra confirmation.
+- **Project 4**: the real PDF is *silent* on `coupons_import`'s behavior and
+  states a specific example filename (`coupon.json`) for the presigned URL.
+  The stale content, cross-checked against the sample event files already
+  bundled in the base repo (`t4_sample_coupon_import_event.json`,
+  `t4_sample_coupon_import_presigned_url_event.json`), turned out to be the
+  more accurate source here — see the Project 4 note above.
+
+**How to apply this going forward (Project 5 and any resubmissions)**: when
+a Content-page version and the Dropbox PDF disagree, don't default to
+either one — check the actual sample files bundled in the repo, since those
+are part of the real assignment infrastructure regardless of which text
+description is current, and use whichever textual source's description
+actually matches the sample file's shape.
 
 ### Project 5: Implement Asynchronous Communication and Data Processing While Demonstrating Adaptability (12 pts)
 

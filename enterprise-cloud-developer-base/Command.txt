@@ -192,42 +192,27 @@ Evidence captured under evidence/part3/:
 
 
 Assessment Part 4 - Implement a File Management Solution
-Commands used to provision the S3 bucket/policy and the presigned-URL Lambda
+Commands used to provision the S3 bucket/policy and both Lambdas
 
-NOTE: the instruction PDF describes only the coupons S3 bucket, its
-deletion-policy, and the coupons_import_presigned_url Lambda/endpoint (items
-1-8) - coupons_import isn't mentioned in the PDF text at all. Initially left
-it untouched on that basis. UPDATE (after fetching the actual D2L rubric,
-see course-info.md): the rubric has a separate 3-of-9-point criterion
-"Handle object upload to the bucket" whose required steps are "Create
-Lambda function code..., Package..., Deploy... using the role and code
-package" - this is coupons_import. Implemented below once this was found.
-
-10. Update and redeploy coupons_import (scripts/t4_update_coupons_import_lambda.sh)
-------------------------------------------------------------------------------------------
-npm install --prefix ./lambda/coupons_import
-cd ./lambda/coupons_import && zip -r ../../coupons_import.zip . && cd ../..
-awslocal lambda update-function-code --function-name coupons_import --zip-file fileb://coupons_import.zip
-
-(coupons_import receives the coupon JSON via the request body - matching
-samples/t4_sample_coupon_import_event.json's shape - and does a DynamoDB
-PutItem into the coupons table, rather than reacting to an S3 event
-notification. The rubric's required steps only mention deploying the
-Lambda, not configuring an S3 trigger, so the simpler API-Gateway-invoked
-pattern - consistent with every other Lambda in this course - was used.)
-
-11. Verify /coupons/import (routed by t0's existing API Gateway wiring)
-------------------------------------------------------------------------------
-curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/import \
-  -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","title":"...", ...}'
-=> {"status":"success"}
-awslocal dynamodb get-item --table-name coupons --key '{"coupon_id":{"S":"..."}}'
-=> returns the exact item that was POSTed
-
-12. Run unit tests
-----------------------
-cd lambda/coupons_import && npx jest
-=> PASS - 3/3 (stores the coupon, 400 missing coupon_id, 400 invalid JSON)
+NOTE on scope discovery: the actual Aurora-authored instruction PDF only
+describes the coupons S3 bucket, its deletion policy, and
+coupons_import_presigned_url - it never mentions coupons_import. The D2L
+rubric later revealed a graded criterion for it ("Handle object upload to
+the bucket," 3/9 points), and a separate stale 2023-dated Content-area page
+(different author, unrelated to this term) gave concrete detail on what
+both Lambdas should actually do:
+- coupons_import: write the received coupon (matching
+  samples/t4_sample_coupon_import_event.json's shape) as a JSON file in the
+  bucket, named "<coupon_id>.json"
+- coupons_import_presigned_url: sign the URL for whatever filename is
+  passed in the request body's "filename" field (matching
+  samples/t4_sample_coupon_import_presigned_url_event.json), not a fixed
+  name
+Initially implemented coupons_import against DynamoDB and
+coupons_import_presigned_url against a fixed "coupon.json" (following the
+Aurora PDF's example filename literally). Corrected both once the sample
+event files and the stale content's detail were reconciled - see
+course-info.md for the full reasoning.
 
 1. Create the coupons S3 bucket (scripts/t4_create_s3_bucket.sh)
 ---------------------------------------------------------------------
@@ -248,43 +233,58 @@ does NOT actually enforce the Deny condition on delete calls - a test
 is a LocalStack enforcement gap, not a defect in the policy itself; the
 policy is syntactically and semantically correct for real AWS.)
 
-3. Update and redeploy coupons_import_presigned_url (scripts/t4_update_coupons_import_presigned_url_lambda.sh)
+3. Update and redeploy coupons_import (scripts/t4_update_coupons_import_lambda.sh)
+------------------------------------------------------------------------------------------
+npm install --prefix ./lambda/coupons_import
+cd ./lambda/coupons_import && zip -r ../../coupons_import.zip . && cd ../..
+awslocal lambda update-function-code --function-name coupons_import --zip-file fileb://coupons_import.zip
+
+(Writes the received coupon to S3 as "<coupon_id>.json", not DynamoDB.
+Needs s3ForcePathStyle: true in the S3 client config - without it the SDK
+defaults to virtual-hosted-style addressing (bucket-name.host), which
+LocalStack's internal docker IP can't resolve. Hit this exact failure
+first: "Inaccessible host: coupons.172.17.0.2" - fixed by adding the
+path-style option, same as coupons_import_presigned_url already had.)
+
+4. Update and redeploy coupons_import_presigned_url (scripts/t4_update_coupons_import_presigned_url_lambda.sh)
 ------------------------------------------------------------------------------------------------------------------
 npm install --prefix ./lambda/coupons_import_presigned_url
 cd ./lambda/coupons_import_presigned_url && zip -r ../../coupons_import_presigned_url.zip . && cd ../..
 awslocal lambda update-function-code --function-name coupons_import_presigned_url --zip-file fileb://coupons_import_presigned_url.zip
 
-(The Lambda signs the URL against `http://localhost:4566` rather than
+(Signs the URL against `http://localhost:4566` rather than
 LOCALSTACK_HOSTNAME - the latter only resolves inside the LocalStack docker
 network, but a presigned URL is meant to be used by an external client, so
-it needs a host that client can actually reach. First attempt used
-LOCALSTACK_HOSTNAME and produced an unreachable internal docker IP; fixed
-by switching to the externally-published localhost:4566 edge port.)
+it needs a host that client can actually reach. Object key now comes from
+the request body's "filename" field rather than a fixed name.)
 
-4. Verify the full presigned-upload flow (routed by t0's existing API Gateway wiring)
-------------------------------------------------------------------------------------------
-curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/import_presigned_url
-=> {"url":"http://localhost:4566/coupons/coupon.json?AWSAccessKeyId=...&Signature=..."}
+5. Verify both endpoints (routed by t0's existing API Gateway wiring)
+------------------------------------------------------------------------------
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/import \
+  -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","title":"...", ...}'
+=> {"status":"success"}
+awslocal s3api get-object --bucket coupons --key <coupon_id>.json downloaded.json
+=> the exact coupon JSON that was POSTed
 
-curl -X PUT "<url from above>" -H "Content-Type: application/json" --data-raw '{"coupon_id":"...","title":"..."}'
-=> HTTP 200 (object uploaded)
+curl -X POST http://<api id>.execute-api.localhost.localstack.cloud:4566/local/coupons/import_presigned_url \
+  -H "Content-Type: application/json" --data-raw '{"filename":"some-name.json"}'
+=> {"url":"http://localhost:4566/coupons/some-name.json?AWSAccessKeyId=...&Signature=..."}
 
-awslocal s3api get-object --bucket coupons --key coupon.json downloaded_coupon.json
-=> downloads the exact JSON that was PUT
+curl -X PUT "<url from above>" -H "Content-Type: application/json" --data-raw '{"anything":"..."}'
+=> HTTP 200 (object uploaded under the requested filename)
 
-5. Run unit tests
+6. Run unit tests
 --------------------
+cd lambda/coupons_import && npx jest
+=> PASS - 3/3 (stores the coupon as <coupon_id>.json, 400 missing coupon_id, 400 invalid JSON)
 cd lambda/coupons_import_presigned_url && npx jest
-=> PASS - 1/1 (returns a presigned PUT URL for coupon.json in the coupons bucket)
+=> PASS - 3/3 (signs a URL for the requested filename, 400 missing filename, 400 invalid JSON)
 
 Evidence captured under evidence/part4/:
-- presigned_url_response.json (the {url:...} response)
-- upload_result.txt (PUT response/status)
-- downloaded_coupon.json, get_object_metadata.json (proof the upload landed)
+- import_output.json, import_downloaded_object.json, import_get_object_metadata.json
+- presigned_url_response.json, upload_result.txt
 - bucket_policy_output.json (get-bucket-policy showing the stored policy)
-- unit_test_results.json (coupons_import_presigned_url)
-- import_output.json, import_get_item_output.json (coupons_import round-trip)
-- coupons_import_unit_test_results.json
+- coupons_import_unit_test_results.json, coupons_import_presigned_url_unit_test_results.json
 
 
 ================================================================================
