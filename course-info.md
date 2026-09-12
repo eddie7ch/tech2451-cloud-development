@@ -17,12 +17,30 @@ per-project — the one fork below covers the whole course.
 The folders below are **plain content in this repo** (their nested `.git`
 was removed so all the actual project code, evidence, and scripts live
 directly in `eddie7ch/tech2451-cloud-development`) — not separate repos
-linked via `.gitignore` like before. The original forks are untouched on
-GitHub as a backup; only the local link was dropped.
+linked via `.gitignore` like before. Only the local link to the fork was
+dropped; the fork on GitHub is not just an untouched backup.
 
-| Project | Original repo | Fork (backup, untouched) | Local folder |
+| Project | Original repo | Fork | Local folder |
 |---|---|---|---|
 | All 5 (shared base) | [hlugo-bvc/enterprise-cloud-developer-base](https://github.com/hlugo-bvc/enterprise-cloud-developer-base) | [eddie7ch/enterprise-cloud-developer-base](https://github.com/eddie7ch/enterprise-cloud-developer-base) | `enterprise-cloud-developer-base/` |
+
+**IMPORTANT — the fork is the actual graded submission target, not just a
+backup.** The Assessment Overview page (Assessments > Dropbox/Assignment,
+or Content > Assessments) explicitly requires: "The code changes are
+committed and pushed to the mainline branch of the fork" and "keep a copy
+of your solution in the fork until you receive proof of completion." When
+this local folder got flattened into `tech2451-cloud-development` (see
+below), work stopped being pushed back to the fork and it fell behind by
+four projects (2026-09-12: caught up to commit `b813288`, covering
+everything through the Project 5 resolution). **Any future changes to
+`enterprise-cloud-developer-base/` need to be pushed to BOTH repos**:
+`tech2451-cloud-development` (course notes / working copy) and
+`eddie7ch/enterprise-cloud-developer-base` (the actual submission target).
+Since the local folder has no `.git` of its own anymore (flattened), sync
+by cloning the fork fresh into a scratch directory, copying over the
+current files (excluding `node_modules/`, `*.zip`, `instructions/`),
+committing, and pushing to `main` — see git history around 2026-09-12 for
+the exact commands used.
 
 Legacy/unused (linked from a 2021-dated "Welcome" post, from an older course
 offering — not referenced by the current Assessment Overview or any Part 1-5
