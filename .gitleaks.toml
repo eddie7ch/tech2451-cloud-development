@@ -1,0 +1,21 @@
+title = "gitleaks config for tech2451-cloud-development"
+
+# Extends gitleaks' default ruleset (don't lose any built-in detectors),
+# and adds one allowlist entry on top for this repo's known-safe case.
+[extend]
+useDefault = true
+
+[allowlist]
+description = '''
+LocalStack test JWTs required as Project 3 assignment evidence. These are
+signed locally by coupons_get_token with a hardcoded test secret
+(documented in Command.txt), issued by a LocalStack instance that only
+ever runs on localhost, and expire after 1 hour. They are not credentials
+to any real or live service, and the assignment instructions explicitly
+require committing this output JSON as evidence. This file's content
+(a fresh token) changes every time Project 3 is re-verified, so it is
+allowlisted by path rather than by a one-off fingerprint.
+'''
+paths = [
+  '''enterprise-cloud-developer-base/evidence/part3/token_valid_output\.json''',
+]
