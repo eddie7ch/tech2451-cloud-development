@@ -2,7 +2,7 @@
   "collection": {
     "item": [
       {
-        "id": "1e05d677-7b9d-45f0-8377-9fd83ae064ef",
+        "id": "195fc295-20e3-4692-aa49-0cf64c3f7167",
         "name": "GET /coupons_poc",
         "request": {
           "url": {
@@ -22,7 +22,7 @@
           {
             "listen": "test",
             "script": {
-              "id": "d024a7c8-d090-46cf-be1d-ac9dd8d7c5bd",
+              "id": "05453e96-e750-4ee5-8158-aaec7a9f702a",
               "type": "text/javascript",
               "exec": [
                 "pm.test('Status code is 200', function () {",
@@ -34,7 +34,7 @@
                 "    pm.expect(jsonData.message).to.eql('Coupons API is working successfully');",
                 "});"
               ],
-              "_lastExecutionId": "6979c39a-f647-4b4c-9b55-ace588146637"
+              "_lastExecutionId": "c07c2f00-5121-400e-88ab-5ea418e9d623"
             }
           }
         ]
@@ -49,23 +49,23 @@
       }
     ],
     "info": {
-      "_postman_id": "5bfd07a3-a0b1-4372-bf42-2d340d96eb7b",
+      "_postman_id": "1fe388c4-8c93-49d9-b52d-abba554d6aed",
       "name": "Coupons API",
       "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     }
   },
   "environment": {
-    "id": "209082f4-0df2-4af5-b03a-f2772d1e1d95",
+    "id": "a7d7c94a-659e-4eba-bfb0-7050de805091",
     "values": [
       {
         "type": "any",
-        "value": "http://az9olv01yn.execute-api.localhost.localstack.cloud:4566/local",
+        "value": "http://9bpwx8xmy1.execute-api.localhost.localstack.cloud:4566/local",
         "key": "api_url"
       }
     ]
   },
   "globals": {
-    "id": "89a6deb5-39aa-42d2-857a-1d075c9ff2c6",
+    "id": "11667443-f6fb-431d-83cc-a10c8a2d5141",
     "values": []
   },
   "run": {
@@ -117,9 +117,9 @@
       }
     },
     "timings": {
-      "responseAverage": 41,
-      "responseMin": 41,
-      "responseMax": 41,
+      "responseAverage": 45,
+      "responseMin": 45,
+      "responseMax": 45,
       "responseSd": 0,
       "dnsAverage": 0,
       "dnsMin": 0,
@@ -129,8 +129,8 @@
       "firstByteMin": 0,
       "firstByteMax": 0,
       "firstByteSd": 0,
-      "started": 1788825166362,
-      "completed": 1788825166454
+      "started": 1790512822079,
+      "completed": 1790512822167
     },
     "executions": [
       {
@@ -143,11 +143,11 @@
           "eof": false,
           "bof": true,
           "cr": false,
-          "ref": "d65f0c96-93c4-4219-9a4a-a192281a962c",
-          "httpRequestId": "0c40234e-d7ee-45f5-bc49-5d7b1f5969c0"
+          "ref": "cba5f6ea-fb38-4327-af2d-dabfaa2b309b",
+          "httpRequestId": "bcc8fd0b-111b-4418-bc4d-5c1611f2cd6f"
         },
         "item": {
-          "id": "1e05d677-7b9d-45f0-8377-9fd83ae064ef",
+          "id": "195fc295-20e3-4692-aa49-0cf64c3f7167",
           "name": "GET /coupons_poc",
           "request": {
             "url": {
@@ -167,7 +167,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "d024a7c8-d090-46cf-be1d-ac9dd8d7c5bd",
+                "id": "05453e96-e750-4ee5-8158-aaec7a9f702a",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status code is 200', function () {",
@@ -179,7 +179,7 @@
                   "    pm.expect(jsonData.message).to.eql('Coupons API is working successfully');",
                   "});"
                 ],
-                "_lastExecutionId": "6979c39a-f647-4b4c-9b55-ace588146637"
+                "_lastExecutionId": "c07c2f00-5121-400e-88ab-5ea418e9d623"
               }
             }
           ]
@@ -193,7 +193,7 @@
               "coupons_poc"
             ],
             "host": [
-              "az9olv01yn",
+              "9bpwx8xmy1",
               "execute-api",
               "localhost",
               "localstack",
@@ -220,12 +220,12 @@
             },
             {
               "key": "Postman-Token",
-              "value": "b42edd43-857f-4aa0-a378-78094eea1301",
+              "value": "a2b38056-b681-4c62-a806-547fbb45e813",
               "system": true
             },
             {
               "key": "Host",
-              "value": "az9olv01yn.execute-api.localhost.localstack.cloud:4566",
+              "value": "9bpwx8xmy1.execute-api.localhost.localstack.cloud:4566",
               "system": true
             },
             {
@@ -242,7 +242,7 @@
           "method": "GET"
         },
         "response": {
-          "id": "e869eec0-248a-48bf-b30f-a65b6ced4e9b",
+          "id": "f2249602-4e4d-46cd-aeb9-2ec9db94b48f",
           "status": "OK",
           "code": 200,
           "header": [
@@ -252,7 +252,7 @@
             },
             {
               "key": "Date",
-              "value": "Mon, 07 Sep 2026 23:52:46 GMT"
+              "value": "Sun, 27 Sep 2026 12:40:22 GMT"
             },
             {
               "key": "Content-Type",
@@ -268,15 +268,15 @@
             },
             {
               "key": "x-amzn-RequestId",
-              "value": "2457fcfb-4dff-4074-9e8b-4acaed4e63bb"
+              "value": "a92714e9-0414-4677-92a6-27a0774dbf8c"
             },
             {
               "key": "x-amz-apigw-id",
-              "value": "059eb512="
+              "value": "f3031edd="
             },
             {
               "key": "X-Amzn-Trace-Id",
-              "value": "Root=1-6a9f4e4e-e56c76e8e48940d486c3ead1;Parent=1da9a5910dbb2999;Sampled=0"
+              "value": "Root=1-6ab90eb6-7df80b16175bb0677462e39e;Parent=7dfd173baba63c14;Sampled=0"
             },
             {
               "key": "x-localstack",
@@ -338,10 +338,10 @@
             ]
           },
           "cookie": [],
-          "responseTime": 41,
+          "responseTime": 45,
           "responseSize": 49
         },
-        "id": "1e05d677-7b9d-45f0-8377-9fd83ae064ef",
+        "id": "195fc295-20e3-4692-aa49-0cf64c3f7167",
         "assertions": [
           {
             "assertion": "Status code is 200",
