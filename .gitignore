@@ -11,6 +11,6 @@ npm-debug.log
 # Course-provided instructions/rubrics downloaded from D2L - never publish these
 instructions/
 
-# Personal video-recording scripts/notes - local only, never push these
+# Personal local-only scratch files - never push these
 video-scripts/
 *_runbook*.html
