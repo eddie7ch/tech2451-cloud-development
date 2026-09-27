@@ -13,3 +13,4 @@ instructions/
 
 # Personal video-recording scripts/notes - local only, never push these
 video-scripts/
+*_runbook*.html
