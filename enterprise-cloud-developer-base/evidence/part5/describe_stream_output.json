@@ -8,7 +8,7 @@
                     "EndingHashKey": "68056473384187692692674921486353642290"
                 },
                 "SequenceNumberRange": {
-                    "StartingSequenceNumber": "49678132788821564296365980911258033654788136737244708866"
+                    "StartingSequenceNumber": "49678736301935672704207646288539049137884296594711379970"
                 }
             },
             {
@@ -18,7 +18,7 @@
                     "EndingHashKey": "136112946768375385385349842972707284581"
                 },
                 "SequenceNumberRange": {
-                    "StartingSequenceNumber": "49678132788843865041564511534399569373060785098750689298"
+                    "StartingSequenceNumber": "49678736301957973449406176911680584856156944956217360402"
                 }
             },
             {
@@ -28,7 +28,7 @@
                     "EndingHashKey": "204169420152563078078024764459060926872"
                 },
                 "SequenceNumberRange": {
-                    "StartingSequenceNumber": "49678132788866165786763042157541105091333433460256669730"
+                    "StartingSequenceNumber": "49678736301980274194604707534822120574429593317723340834"
                 }
             },
             {
@@ -38,7 +38,7 @@
                     "EndingHashKey": "272225893536750770770699685945414569163"
                 },
                 "SequenceNumberRange": {
-                    "StartingSequenceNumber": "49678132788888466531961572780682640809606081821762650162"
+                    "StartingSequenceNumber": "49678736302002574939803238157963656292702241679229321266"
                 }
             },
             {
@@ -48,7 +48,7 @@
                     "EndingHashKey": "340282366920938463463374607431768211455"
                 },
                 "SequenceNumberRange": {
-                    "StartingSequenceNumber": "49678132788910767277160103403824176527878730183268630594"
+                    "StartingSequenceNumber": "49678736302024875685001768781105192010974890040735301698"
                 }
             }
         ],
@@ -63,6 +63,6 @@
         ],
         "EncryptionType": "NONE",
         "KeyId": null,
-        "StreamCreationTimestamp": 1788828903.401
+        "StreamCreationTimestamp": 1790520307.855
     }
 }
