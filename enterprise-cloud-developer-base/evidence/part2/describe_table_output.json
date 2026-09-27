@@ -22,16 +22,16 @@
             }
         ],
         "TableStatus": "ACTIVE",
-        "CreationDateTime": 1788827917.0,
+        "CreationDateTime": 1790516708.0,
         "ProvisionedThroughput": {
             "NumberOfDecreasesToday": 0,
             "ReadCapacityUnits": 25,
             "WriteCapacityUnits": 10
         },
-        "TableSizeBytes": 365,
+        "TableSizeBytes": 412,
         "ItemCount": 1,
         "TableArn": "arn:aws:dynamodb:us-east-1:000000000000:table/coupons",
-        "TableId": "f604be32-e99c-4182-88e1-dbc08aea4063",
+        "TableId": "5d60f32a-3356-435f-8cff-f41509ba968a",
         "GlobalSecondaryIndexes": [
             {
                 "IndexName": "provider_id-campaign_id-index",
